@@ -23,6 +23,7 @@ public:
 	unsigned int id = NULL;
 	vector <int> Antecessores;
 	vector <int> Sucessores;
+	vector <int> Adjacentes;
 };
 
 
@@ -31,7 +32,7 @@ class Grafo
 public:
 	string Direcionado;
 	int QuantidadeDeVertices = 0;
-	vector<vector<unsigned int>> MatrizAdjacencia;
+	vector<vector<int>> MatrizAdjacencia;
 	vector <Vertice> Vertices;
 	int QuantidadeDeArestas = 0;
 };
@@ -52,8 +53,8 @@ Grafo CriaGrafo(string Direcionado, unsigned int QuantidadeDeVertices,  unsigned
 vector <int> Sucessores(Grafo* _Grafo, unsigned int vertice);
 vector <int> Antecessores(Grafo* _Grafo, unsigned int vertice);
 void CriaAresta(Grafo* _Grafo, int origem, int destino, int valor);
-int GrauDoVertice(Grafo* _Grafo, int vertice);
-vector<int> adjacentes(Grafo* _Grafo, int vertice);
+vector<int> GrauDoVertice(Grafo* _Grafo, int vertice);
+vector<vector<int>> adjacentes(Grafo* _Grafo, int vertice);
 float DensidadeDoGrafo(Grafo* _Grafo);
 
 vector<float> Sumario(Grafo* _Grafo);
