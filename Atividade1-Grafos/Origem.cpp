@@ -1,6 +1,6 @@
+#pragma warning(disable : 4996)
 #include "Origem.h"
 #include <iomanip>
-#pragma warning(disable : 4996)
 
 
 int main() {
@@ -14,18 +14,19 @@ int main() {
 	do
 	{
 		LimparTela();
+		std::cout << endl;
 		std::cout
 
 			<< "##############################################################################################\n"
 			<< "#                                MANIPULADOR DE GRAFOS                                       #\n"
 			<< "#--------------------------------------------------------------------------------------------#\n"
 			<< "# 1 - Selecionar Arquivo de texto (.txt) para processamento do grafo                         #\n"
-			<< "# 2 - Processar Arquivo de texto (.txt) em uma estrutura de grafo                            #\n"
+			<< "# 2 - Processar Arquivo de texto (.txt) selecionado em uma estrutura de grafo                #\n"
 			<< "# 3 - Criar um novo grafo manualmente                                                        #\n"
 			<< "# 4 - Inserir aresta manualmente (ao informar os vertices de origem e destino,               #\n"
 			<< "# caso não existam, eles serão criados automaticamente).                                       #\n"
 			<< "# 5 - Selecionar grafo                                                                       #\n"
-			<< "# 6 - Exibir Sucessores e Antecessroes de um vértice (para grafos direcionados)               #\n"
+			<< "# 6 - Exibir Sucessores e Antecessroes, ou adjacentes, de um vértice                           #\n"
 			<< "# 7 - Exibir Grau de um vértice                                                               #\n"
 			<< "# 8 - Exibir Sumário do grafo (número de arestas, vértice e densidade do grafo)                 #\n"
 			<< "# 9 - Processar e exibir matriz distância usando algoritmo de FloydWarshall(todos para todos) #\n"
@@ -56,6 +57,7 @@ int main() {
 				std::cout << "O Grafo será criado a partir do arquivo:" << endl;
 				std::cout << diretorioCaminho << endl;
 				std::cout << "é um grafo direcionado ou não? 1 - para sim 2 - para não";
+				std::cout << endl;
 				std::cin >> escolha;
 				if (escolha == 1)
 					direcionado = "Direcionado";
@@ -88,6 +90,7 @@ int main() {
 			std::cout << "O Grafo será criado a partir do arquivo:" << endl;
 			std::cout << diretorioCaminho << endl;
 			std::cout << "é um grafo direcionado ou não? 1 - para sim 2 - para não";
+			std::cout << endl;
 			std::cin >> escolha;
 			if (escolha == 1)
 				direcionado = "Direcionado";
@@ -131,6 +134,7 @@ int main() {
 			for (std::list<Grafo>::iterator indice = estruturasDeGrafo.begin(); indice != estruturasDeGrafo.end(); indice++) {
 				std::cout << "Grafo:" << numeroGrafo << endl;
 				Sumario(&(*indice));
+				std::cout << endl;
 				enderecos[numeroGrafo] = &(*indice);
 				numeroGrafo++;
 			}
@@ -202,6 +206,7 @@ int main() {
 		}
 		case 9: {
 			vector<vector<int>> matrizDistancia = MenorDistancia_FloydWarshall(selecionado);
+			std::cout << "calculado" << endl;
 			int colunas = matrizDistancia.size();
 			int linhas = 1;
 			std::cout << "   ";
@@ -210,17 +215,13 @@ int main() {
 
 			}
 			std::cout << endl;
-			/*for (int j = 1; j <= colunas; j++) {
-				std::cout << "___";
-			}*/
-			//std::cout << endl;
 			for (int i = 0; i < matrizDistancia.size(); i++) {
-				//if(i >= 10)
-					std::cout << std::setfill('0') << std::setw(2) << linhas << " ";
-				/*else
-					std::cout << linhas << "  " << "|";*/
+				std::cout << std::setfill('0') << std::setw(2) << linhas << " ";
 				for (int j = 0; j < matrizDistancia[i].size(); j++) {
-					if (matrizDistancia[i][j] == 0 && i != j)
+					if ((!checarExistenciaVertice(selecionado, i+1)) || (!checarExistenciaVertice(selecionado ,j+1))) {
+						std::cout << "-" << "  ";
+					}
+					else if ((matrizDistancia[i][j] == 0 && i != j))
 						std::cout << "-" << "  ";
 					else
 						std::cout << std::setfill('0') << std::setw(2) << matrizDistancia[i][j] << " ";

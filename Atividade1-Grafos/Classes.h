@@ -29,5 +29,7 @@ public:
 	int QuantidadeDeVertices = 0;
 	std::vector<std::vector<int>> MatrizAdjacencia;
 	std::vector <Vertice> Vertices;
+	std::vector<int> VerticesAdicionados;
+	bool VerticePreDefinidos;
 	int QuantidadeDeArestas = 0;
 };

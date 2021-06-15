@@ -8,10 +8,13 @@ Grafo CriaGrafo(string Direcionado, unsigned int QuantidadeDeVertices, unsigned 
 	newGrafo.QuantidadeDeArestas = QtdArestas;
 	if (newGrafo.QuantidadeDeVertices != 0) {
 		newGrafo.MatrizAdjacencia.resize(newGrafo.QuantidadeDeVertices, vector<int>(newGrafo.QuantidadeDeVertices, 0));
+		newGrafo.VerticePreDefinidos = true;
 	}
 	else
 	{
 		newGrafo.MatrizAdjacencia.resize(1, vector<int>(1, 0));
+		newGrafo.VerticesAdicionados.resize(10,0);
+		newGrafo.VerticePreDefinidos = false;
 	}
 	newGrafo.Vertices.resize(newGrafo.MatrizAdjacencia.size());
 	return newGrafo;
@@ -37,6 +40,27 @@ vector<int> Antecessores(Grafo* _Grafo, unsigned int vertice)
 	}
 	else {
 		return (*_Grafo).Vertices[vertice - 1].Antecessores;
+	}
+}
+
+bool checarExistenciaVertice(Grafo* _Grafo, int vertice)
+{
+	for (std::vector<int>::iterator i = (*_Grafo).VerticesAdicionados.begin(); i != (*_Grafo).VerticesAdicionados.end(); i++) {
+		if (vertice == (*i))
+			return true;
+	}
+	return false;
+}
+
+void CriaVertice(Grafo* _Grafo, int vertice)
+{
+	if (!(*_Grafo).VerticePreDefinidos) {
+		if ((*_Grafo).QuantidadeDeVertices == (*_Grafo).VerticesAdicionados.size())
+			(*_Grafo).VerticesAdicionados.resize((*_Grafo).VerticesAdicionados.size() * 2,0);
+		if (!checarExistenciaVertice(_Grafo, vertice)) {
+			(*_Grafo).QuantidadeDeVertices++;
+			(*_Grafo).VerticesAdicionados.push_back(vertice);
+		}
 	}
 }
 
@@ -68,7 +92,9 @@ void CriaAresta(Grafo* _Grafo, int origem, int destino, int valor)
 	}
 	(*_Grafo).Vertices[origem - 1].id = origem;
 	(*_Grafo).Vertices[destino - 1].id = destino;
-	(*_Grafo).QuantidadeDeVertices = (*_Grafo).MatrizAdjacencia.size();
+	//(*_Grafo).QuantidadeDeVertices = (*_Grafo).MatrizAdjacencia.size();
+	CriaVertice(_Grafo, origem);
+	CriaVertice(_Grafo, destino);
 }
 
 
@@ -94,11 +120,11 @@ vector<vector<int>> adjacentes(Grafo* _Grafo, int vertice)
 {
 	vector<vector<int>> adjacencia;
 	if ((*_Grafo).Direcionado == "Direcionado") {
-		adjacencia.push_back((*_Grafo).Vertices[vertice].Sucessores);
-		adjacencia.push_back((*_Grafo).Vertices[vertice].Antecessores);
+		adjacencia.push_back((*_Grafo).Vertices[vertice-1].Sucessores);
+		adjacencia.push_back((*_Grafo).Vertices[vertice-1].Antecessores);
 	}
 	else {
-		adjacencia.push_back((*_Grafo).Vertices[vertice].Adjacentes);
+		adjacencia.push_back((*_Grafo).Vertices[vertice-1].Adjacentes);
 	}
 	return adjacencia;
 }
@@ -119,7 +145,7 @@ float DensidadeDoGrafo(Grafo* _Grafo)
 
 vector<vector<int>> MenorDistancia_FloydWarshall(Grafo* _Grafo)
 {
-	vector<vector<int>> matrizDistancia((*_Grafo).QuantidadeDeVertices, vector<int>((*_Grafo).QuantidadeDeVertices, 0)); //0 representa distancia infinita
+	vector<vector<int>> matrizDistancia((*_Grafo).MatrizAdjacencia.size(), vector<int>((*_Grafo).MatrizAdjacencia.size(), 0)); //0 representa distancia infinita
 	copy((*_Grafo).MatrizAdjacencia.begin(), (*_Grafo).MatrizAdjacencia.end(), matrizDistancia.begin());
 	for (int j = 0; j < matrizDistancia.size(); j++) {
 		for (int k = 0; k < matrizDistancia.size(); k++) {
