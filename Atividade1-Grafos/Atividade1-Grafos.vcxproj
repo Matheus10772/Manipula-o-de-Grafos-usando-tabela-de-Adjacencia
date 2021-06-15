@@ -140,9 +140,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ArquivoDialogo.cpp" />
+    <ClCompile Include="metodosDeInteracaoComSo.cpp" />
+    <ClCompile Include="metodosDeManipulacao.cpp" />
     <ClCompile Include="Origem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArquivoDialogo.h" />
+    <ClInclude Include="Classes.h" />
+    <ClInclude Include="metodosDeInteracaoComSo.h" />
+    <ClInclude Include="metodosDeManipulacao.h" />
+    <ClInclude Include="nfd.h" />
     <ClInclude Include="Origem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

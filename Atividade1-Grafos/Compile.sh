@@ -1,0 +1,1 @@
+g++ -o Grafo ArquivoDialogo.cpp Classes.h metodosDeInteracaoComSo.cpp metodosDeManipulacao.cpp nfd_common.c nfd_gtk.c Origem.cpp `pkg-config gtkmm-3.0 --cflags --libs` -fpermissive
