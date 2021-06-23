@@ -1,10 +1,14 @@
 #pragma warning(disable : 4996)
 #include "Origem.h"
 #include <iomanip>
+#include <locale.h>
 
 
 int main() {
+	setlocale(LC_ALL, "");
+#ifdef OS_Windows
 	system("chcp 65001");
+#endif
 	unsigned int opcao = 0;
 	string diretorioCaminho;
 	vector <DadosDoArquivo> DadosLidos;
@@ -24,12 +28,12 @@ int main() {
 			<< "# 2 - Processar Arquivo de texto (.txt) selecionado em uma estrutura de grafo                #\n"
 			<< "# 3 - Criar um novo grafo manualmente                                                        #\n"
 			<< "# 4 - Inserir aresta manualmente (ao informar os vertices de origem e destino,               #\n"
-			<< "# caso não existam, eles serão criados automaticamente).                                       #\n"
+			<< "# caso não existam, eles serão criados automaticamente).                                     #\n"
 			<< "# 5 - Selecionar grafo                                                                       #\n"
-			<< "# 6 - Exibir Sucessores e Antecessroes, ou adjacentes, de um vértice                           #\n"
-			<< "# 7 - Exibir Grau de um vértice                                                               #\n"
-			<< "# 8 - Exibir Sumário do grafo (número de arestas, vértice e densidade do grafo)                 #\n"
-			<< "# 9 - Processar e exibir matriz distância usando algoritmo de FloydWarshall(todos para todos) #\n"
+			<< "# 6 - Exibir Sucessores e Antecessroes, ou adjacentes, de um vértice                         #\n"
+			<< "# 7 - Exibir Grau de um vértice                                                              #\n"
+			<< "# 8 - Exibir Sumário do grafo (número de arestas, vértice e densidade do grafo)              #\n"
+			<< "# 9 - Processar e exibir matriz distância usando algoritmo de FloydWarshall(todos para todos)#\n"
 			<< "# 0 - Sair do programa                                                                       #\n"
 			<< "##############################################################################################\n"
 			<< endl;

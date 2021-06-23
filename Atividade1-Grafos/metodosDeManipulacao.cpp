@@ -166,6 +166,130 @@ vector<vector<int>> MenorDistancia_FloydWarshall(Grafo* _Grafo)
 	return matrizDistancia;
 }
 
+vector<vector<int>> MaiorDistancia_FloydWarshall(Grafo* _Grafo)
+{
+	vector<vector<int>> matrizDistancia((*_Grafo).MatrizAdjacencia.size(), vector<int>((*_Grafo).MatrizAdjacencia.size(), 0)); //0 representa distancia infinita
+	copy((*_Grafo).MatrizAdjacencia.begin(), (*_Grafo).MatrizAdjacencia.end(), matrizDistancia.begin());
+	for (int j = 0; j < matrizDistancia.size(); j++) {
+		for (int k = 0; k < matrizDistancia.size(); k++) {
+			for (int l = 0; l < matrizDistancia.size(); l++) {
+				int valor1 = matrizDistancia[k][j];
+				int valor2 = matrizDistancia[j][l];
+				if (k == l)
+					matrizDistancia[k][l] = 0;
+				else if (valor1 != 0 && valor2 != 0) {
+					int soma = valor1 + valor2;
+					if (soma > matrizDistancia[k][l] || matrizDistancia[k][l] == 0) {
+						matrizDistancia[k][l] = soma;
+					}
+				}
+			}
+		}
+	}
+	return matrizDistancia;
+}
+
+vector<vector<int>> ExcentricidadeTodosOsVertices(Grafo* _Grafo)
+{
+	return MaiorDistancia_FloydWarshall(_Grafo);
+}
+
+int Raio(vector<vector<int>> MatrizExcentricidade)
+{
+	int raio = 0;
+	bool achado = false;
+	for (vector<vector<int>>::iterator i = MatrizExcentricidade.begin(); i != MatrizExcentricidade.end(); i++) {
+		for (vector<int>::iterator j = (*i).begin(); j != (*i).end(); j++) {
+			if ((*j) != 0) {
+				raio = (*j);
+				break;
+				achado = true;
+			}
+		}
+		if (achado)
+			break;
+	}
+	for (vector<vector<int>>::iterator i = MatrizExcentricidade.begin(); i != MatrizExcentricidade.end(); i++) {
+		for (vector<int>::iterator j = (*i).begin(); j != (*i).end(); j++) {
+			if ((*j) < raio && (*j) != 0)
+				raio = (*j);
+		}
+	}
+	return raio;
+}
+
+vector<int> Centro(vector<vector<int>> MatrizExcentricidade, int raio)
+{
+	vector<int> verticesCentro;
+	for (size_t i = 0; i < MatrizExcentricidade.size(); i++) {
+		for (size_t j = 0; j < MatrizExcentricidade[i].size(); j++) {
+			if (MatrizExcentricidade[i][j] == raio) 
+				verticesCentro.push_back(j);
+		}
+	}
+	return verticesCentro;
+}
+
+vector<int> Periferia(vector<vector<int>> MatrizExcentricidade, int diametro)
+{
+	vector<int> verticesPeriferia;
+	for (size_t i = 0; i < MatrizExcentricidade.size(); i++) {
+		for (size_t j = 0; j < MatrizExcentricidade[i].size(); j++) {
+			if (MatrizExcentricidade[i][j] == diametro)
+				verticesPeriferia.push_back(j);
+		}
+	}
+	return verticesPeriferia;
+}
+
+int Diametro(vector<vector<int>> MatrizExcentricidade)
+{
+	int diametro = 0;
+	for (vector<vector<int>>::iterator i = MatrizExcentricidade.begin(); i != MatrizExcentricidade.end(); i++) {
+		for (vector<int>::iterator j = (*i).begin(); j != (*i).end(); j++) {
+			if ((*j) > diametro)
+				diametro = (*j);
+		}
+	}
+	return diametro;
+}
+
+vector<int> centroide(vector<vector<int>> MatrizDistanciaMenores) {
+	int centroide_ = 0;
+	vector<int> vetorSomas;
+	vector<int> vertices;
+	vector<int> verticesFinal;
+	for (vector<vector<int>>::iterator i = MatrizDistanciaMenores.begin(); i != MatrizDistanciaMenores.end(); i++) {
+		long int soma = 0;
+		for (vector<int>::iterator j = (*i).begin(); j != (*i).end(); j++) {
+			soma += (*j);
+		}
+		if (soma != 0) {
+			centroide_ = soma;
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < MatrizDistanciaMenores.size(); i++) {
+		long int soma = 0;
+		for (size_t j = 0; j < MatrizDistanciaMenores[i].size(); j++) {
+			soma += MatrizDistanciaMenores[i][j];
+		}
+		if (soma < centroide_) {
+			centroide_ = soma;
+			vetorSomas.push_back(centroide_);
+			vertices.push_back(i);
+		}
+	}
+
+	for (size_t i = 0; i < vetorSomas.size(); i++) {
+		if (!(vetorSomas[i] == centroide_)) 
+			verticesFinal.push_back(vertices[i]);
+	}
+	return verticesFinal;
+}
+
+
 vector<float> Sumario(Grafo* _Grafo)
 {
 	vector<float> dados(4);
