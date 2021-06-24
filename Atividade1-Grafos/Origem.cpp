@@ -34,6 +34,12 @@ int main() {
 			<< "# 7 - Exibir Grau de um vértice                                                              #\n"
 			<< "# 8 - Exibir Sumário do grafo (número de arestas, vértice e densidade do grafo)              #\n"
 			<< "# 9 - Processar e exibir matriz distância usando algoritmo de FloydWarshall(todos para todos)#\n"
+			<< "# 10 - Exibir matriz de exentricidade de todos os pares de vértices                          #\n"
+			<< "# 11 - Calcular e exibir o raio do grafo                                                     #\n"
+			<< "# 12 - Calcular e exibir o diâmetro do grafo                                                 #\n"
+			<< "# 13 - Calcular vértices que fazem parte do centro                                           #\n"
+			<< "# 14 - Calcular vértices que fazem parte do centróide do grafo                               #\n"
+			<< "# 15 - Calcular os vértices que fazem parte da periferia do grafo                            #\n"
 			<< "# 0 - Sair do programa                                                                       #\n"
 			<< "##############################################################################################\n"
 			<< endl;
@@ -232,6 +238,74 @@ int main() {
 				}
 				std::cout << endl;
 				linhas++;
+			}
+			Pause();
+			break;
+		}
+		case 10: {
+			vector<vector<int>> matrizExcentricidade = ExcentricidadeTodosOsVertices(selecionado);
+			int colunas = matrizExcentricidade.size();
+			int linhas = 1;
+			std::cout << "   ";
+			for (int k = 1; k <= colunas; k++) {
+				std::cout << std::setfill('0') << std::setw(2) << k << " ";
+
+			}
+			std::cout << endl;
+			for (int i = 0; i < matrizExcentricidade.size(); i++) {
+				std::cout << std::setfill('0') << std::setw(2) << linhas << " ";
+				for (int j = 0; j < matrizExcentricidade[i].size(); j++) {
+					if ((!checarExistenciaVertice(selecionado, i + 1)) || (!checarExistenciaVertice(selecionado, j + 1))) {
+						std::cout << "-" << "  ";
+					}
+					else if ((matrizExcentricidade[i][j] == 0 && i != j))
+						std::cout << "-" << "  ";
+					else
+						std::cout << std::setfill('0') << std::setw(2) << matrizExcentricidade[i][j] << " ";
+				}
+				std::cout << endl;
+				linhas++;
+			}
+			Pause();
+			break;
+		}
+		case 11: {
+			int raio = Raio(ExcentricidadeTodosOsVertices(selecionado));
+			std::cout << endl << "O raio do grafo é: " << raio << endl;
+			Pause();
+			break;
+		}
+		case 12: {
+			int diametro = Diametro(ExcentricidadeTodosOsVertices(selecionado));
+			std::cout << "O diâmetro do grafo é: " << diametro << endl;
+			Pause();
+			break;
+		}
+		case 13: {
+			vector<vector<int>> matrizExcentricidade = ExcentricidadeTodosOsVertices(selecionado);
+			vector<int> verticesCentro = Centro(matrizExcentricidade, Raio(matrizExcentricidade));
+			std::cout << "O(s) vértice(s) que faz(em) parte do centro é(são): " << endl;
+			for (vector<int>::iterator i = verticesCentro.begin(); i != verticesCentro.end(); i++) {
+				std::cout << (*i) << " ";
+			}
+			Pause();
+			break;
+		}
+		case 14: {
+			vector<int> verticesCentroide = centroide(MenorDistancia_FloydWarshall(selecionado));
+			std::cout << "O(s) vértice(s) que faz(em) parte do centróide é(são): " << endl;
+			for (vector<int>::iterator i = verticesCentroide.begin(); i != verticesCentroide.end(); i++) {
+				std::cout << (*i)+1 << " ";
+			}
+			Pause();
+			break;
+		}
+		case 15: {
+			vector<vector<int>> matrizExcentricidade = ExcentricidadeTodosOsVertices(selecionado);
+			vector<int> verticesPeriferia = Periferia(matrizExcentricidade, Diametro(matrizExcentricidade));
+			std::cout << "O(s) vértice(s) que faz(em) parte da periferia é(são): " << endl;
+			for (vector<int>::iterator i = verticesPeriferia.begin(); i != verticesPeriferia.end(); i++) {
+				std::cout << (*i)+1 << " ";
 			}
 			Pause();
 			break;

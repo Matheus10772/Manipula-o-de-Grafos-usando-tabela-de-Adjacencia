@@ -22,7 +22,7 @@ int Raio(vector<vector<int>> MatrizExcentricidade);
 vector<int> Centro(vector<vector<int>> MatrizExcentricidade, int raio);
 vector<int> Periferia(vector<vector<int>> MatrizExcentricidade, int diametro);
 int Diametro(vector<vector<int>> MatrizExcentricidade);
-vector<int> centroide(vector<vector<int>> MatrizDistanciaMaiores);
+vector<int> centroide(vector<vector<int>> MatrizDistanciaMenores);
 vector<float> Sumario(Grafo* _Grafo);
 bool checkValoresValidos(string valoresValidos, char valores[]);
 vector <string> split_string(string str, const char* op);
