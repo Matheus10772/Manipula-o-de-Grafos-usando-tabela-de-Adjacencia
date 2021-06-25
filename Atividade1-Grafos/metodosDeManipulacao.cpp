@@ -224,7 +224,7 @@ vector<int> Centro(vector<vector<int>> MatrizExcentricidade, int raio)
 	for (size_t i = 0; i < MatrizExcentricidade.size(); i++) {
 		for (size_t j = 0; j < MatrizExcentricidade[i].size(); j++) {
 			if (MatrizExcentricidade[i][j] == raio) 
-				verticesCentro.push_back(j);
+				verticesCentro.push_back(i+1);
 		}
 	}
 	return verticesCentro;
@@ -236,7 +236,7 @@ vector<int> Periferia(vector<vector<int>> MatrizExcentricidade, int diametro)
 	for (size_t i = 0; i < MatrizExcentricidade.size(); i++) {
 		for (size_t j = 0; j < MatrizExcentricidade[i].size(); j++) {
 			if (MatrizExcentricidade[i][j] == diametro)
-				verticesPeriferia.push_back(j);
+				verticesPeriferia.push_back(i);
 		}
 	}
 	return verticesPeriferia;
@@ -283,7 +283,7 @@ vector<int> centroide(vector<vector<int>> MatrizDistanciaMenores) {
 	}
 
 	for (size_t i = 0; i < vetorSomas.size(); i++) {
-		if (!(vetorSomas[i] == centroide_)) 
+		if (vetorSomas[i] == centroide_) 
 			verticesFinal.push_back(vertices[i]);
 	}
 	return verticesFinal;

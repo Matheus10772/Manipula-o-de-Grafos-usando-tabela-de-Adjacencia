@@ -34,7 +34,7 @@ int main() {
 			<< "# 7 - Exibir Grau de um vértice                                                              #\n"
 			<< "# 8 - Exibir Sumário do grafo (número de arestas, vértice e densidade do grafo)              #\n"
 			<< "# 9 - Processar e exibir matriz distância usando algoritmo de FloydWarshall(todos para todos)#\n"
-			<< "# 10 - Exibir matriz de exentricidade de todos os pares de vértices                          #\n"
+			<< "# 10 - Exibir matriz de excentricidade de todos os pares de vértices                          #\n"
 			<< "# 11 - Calcular e exibir o raio do grafo                                                     #\n"
 			<< "# 12 - Calcular e exibir o diâmetro do grafo                                                 #\n"
 			<< "# 13 - Calcular vértices que fazem parte do centro                                           #\n"
