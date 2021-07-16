@@ -11,7 +11,7 @@ int main() {
 #endif
 	unsigned int opcao = 0;
 	string diretorioCaminho;
-	vector <DadosDoArquivo> DadosLidos;
+	vector<vector <int>> DadosLidos;
 	list <Grafo> estruturasDeGrafo;
 	Grafo* selecionado = new Grafo;
 	
@@ -34,12 +34,16 @@ int main() {
 			<< "# 7 - Exibir Grau de um vértice                                                              #\n"
 			<< "# 8 - Exibir Sumário do grafo (número de arestas, vértice e densidade do grafo)              #\n"
 			<< "# 9 - Processar e exibir matriz distância usando algoritmo de FloydWarshall(todos para todos)#\n"
-			<< "# 10 - Exibir matriz de excentricidade de todos os pares de vértices                          #\n"
+			<< "# 10 - Exibir matriz de excentricidade de todos os pares de vértices                         #\n"
 			<< "# 11 - Calcular e exibir o raio do grafo                                                     #\n"
 			<< "# 12 - Calcular e exibir o diâmetro do grafo                                                 #\n"
 			<< "# 13 - Calcular vértices que fazem parte do centro                                           #\n"
 			<< "# 14 - Calcular vértices que fazem parte do centróide do grafo                               #\n"
 			<< "# 15 - Calcular os vértices que fazem parte da periferia do grafo                            #\n"
+			<< "# 16 - Utilizar algoritmo de busca em lagura para verificar se existe um caminho válido ente #\n"
+			<< "# dois vértices.                                                                             #\n"
+			<< "# 17 - Carregar arquivo de pares de vértices que representa um possível corte.               #\n"
+			<< "# 18 - Informar pares de vértices que representam um possível corte.                         #\n"
 			<< "# 0 - Sair do programa                                                                       #\n"
 			<< "##############################################################################################\n"
 			<< endl;
@@ -79,8 +83,8 @@ int main() {
 					break;
 				}
 				estruturasDeGrafo.push_front(CriaGrafo(direcionado));
-				for (std::vector<DadosDoArquivo>::iterator indice = DadosLidos.begin(); indice != DadosLidos.end(); indice++) {
-					CriaAresta(&(estruturasDeGrafo.front()), (*indice).origem, (*indice).destino, (*indice).valor);
+				for (std::vector<std::vector<int>>::iterator indice = DadosLidos.begin(); indice != DadosLidos.end(); indice++) {
+					CriaAresta(&(estruturasDeGrafo.front()), (*indice)[0], (*indice)[1], (*indice)[2]);
 				}
 				selecionado = &(estruturasDeGrafo.front());
 				std::cout << "Grafo criado e processado com sucesso!" << endl;
@@ -308,6 +312,167 @@ int main() {
 				std::cout << (*i)+1 << " ";
 			}
 			Pause();
+			break;
+		}
+		case 16: {
+			char vertice[256];
+			char vertice2[256];
+			std::cout << "Digite o vértice de origem." << endl;
+			scanf("%s", vertice);
+			if (!checkValoresValidos("0123456789", vertice) || !checarExistenciaVertice(selecionado, stoi(string(vertice)))) {
+				std::cout << "Digitação inválida" << endl;
+				Pause();
+				break;
+			}
+			std::cout << "Digite o vértice de destino" << endl;
+			scanf("%s", vertice2);
+			if (!checkValoresValidos("0123456789", vertice2) || !checarExistenciaVertice(selecionado, stoi(string(vertice2)))) {
+				std::cout << "Digitação inválida" << endl;
+				Pause();
+				break;
+			}
+			bool resultado;
+			resultado = BuscaEmLargura(selecionado->Vertices, stoi(string(vertice)), stoi(string(vertice2)), selecionado->Direcionado);
+			resultado == true ? (std::cout << "O vértice foi encontrado" << std::endl)
+				: (std::cout << "O vértice não foi encontrado" << std::endl);
+			Pause();
+			break;
+		}
+		case 17: {
+			char vertice[256];
+			std::cout << "Digite o vértice de origem." << endl;
+			setbuf(stdin, NULL);
+			scanf("%s", vertice);
+			if (!checkValoresValidos("0123456789", vertice) || !checarExistenciaVertice(selecionado, stoi(string(vertice)))) {
+				std::cout << "Digitação inválida" << endl;
+				Pause();
+				break;
+			}
+			char vertice2[256];
+
+			std::cout << "Digite o vértice de destino" << endl;
+			setbuf(stdin, NULL);
+			scanf("%s", vertice2);
+			if (!checkValoresValidos("0123456789", vertice2) || !checarExistenciaVertice(selecionado, stoi(string(vertice2)))) {
+				std::cout << "Digitação inválida" << endl;
+				Pause();
+				break;
+			}
+			if (!checarFConexa(selecionado, stoi(string(vertice)))) {
+				string diretorioCaminho = DialogoDeAberturaDeArquivo();
+				std::vector<std::vector<int>> cortes;
+				if (!diretorioCaminho.empty()) {
+					cortes = LerArquivo(diretorioCaminho);
+				}
+				else {
+					std::cout << "Nenhum arquivo selecionado" << endl;
+					Pause();
+					break;
+				}
+				vector <Vertice> _tempVertices(selecionado->Vertices.size());
+				copy(selecionado->Vertices.begin(), selecionado->Vertices.end(), _tempVertices.begin());
+				long int capacidade = 0;
+				for (std::vector<vector<int>>::iterator i = cortes.begin(); i != cortes.end(); i++) {
+					int verticeOrigem = ((*i)[0]) - 1;
+					if (checarExistenciaVertice(selecionado, verticeOrigem)) {
+						for (int j = 0; j < _tempVertices[verticeOrigem].Sucessores.size(); j++) {
+							if (_tempVertices[verticeOrigem].Sucessores[j] == (*i)[1]) {
+								capacidade += selecionado->MatrizAdjacencia[verticeOrigem][j];
+								_tempVertices[verticeOrigem].Sucessores.erase(_tempVertices[verticeOrigem].Sucessores.begin() + j);
+								break;
+							}
+						}
+					}
+				}
+
+				bool resultado = BuscaEmLargura(_tempVertices, stoi(string(vertice)), stoi(string(vertice2)), selecionado->Direcionado);
+				resultado == false ? (std::cout << "Os pares de vértices contidos no arquivo representam um corte!" << endl
+					<< "Capacidade: " << capacidade << endl)
+					: (std::cout << "Os pares de vértices contidos no arquivo NÃO representam um corte!" << endl);
+				Pause();
+			}
+			else {
+				std::cout << "Grafo possui circuíto. Impossível determinar corte" << endl;
+				Pause();
+			}
+			break;
+		}
+		case 18: {
+			char vertice[256];
+			std::cout << "Digite o vértice de origem." << endl;
+			setbuf(stdin, NULL);
+			scanf("%c", vertice);
+			if (!checkValoresValidos("0123456789", vertice) || !checarExistenciaVertice(selecionado, stoi(string(vertice)))) {
+				std::cout << "Digitação inválida" << endl;
+				Pause();
+				break;
+			}
+			char vertice2[256];
+			std::cout << "Digite o vértice de destino" << endl;
+			setbuf(stdin, NULL);
+			scanf("%s", vertice2);
+			if (!checkValoresValidos("0123456789", vertice2) || !checarExistenciaVertice(selecionado, stoi(string(vertice2)))) {
+				std::cout << "Digitação inválida" << endl;
+				Pause();
+				break;
+			}
+			if (!checarFConexa(selecionado, stoi(string(vertice)))) {
+				std::string par;
+				std::vector <std::string> parSeparado;
+				std::vector<std::vector<int>> cortes;
+				char* buffer;
+				char* buffer2;
+				do {
+					std::cout << "Digite um par de vértice separado por espaço. Ex: 2 5" << endl << "Os vértices informados precisam existir no grafo" << endl;
+					//std::cin.ignore();
+					par.clear();
+					std::getline(cin, par);
+					setbuf(stdin, NULL);
+					parSeparado = split_string(par, " ");
+					buffer = new char[parSeparado[0].length() + 1];
+					buffer2 = new char[parSeparado[1].length() + 1];
+					memmove(buffer, parSeparado[0].c_str(), parSeparado[0].length());
+					memmove(buffer2, parSeparado[1].c_str(), parSeparado[1].length());
+					if (!checkValoresValidos("0123456789", buffer) || !checkValoresValidos("0123456789", buffer2)
+						|| !checarExistenciaVertice(selecionado, stoi(parSeparado[0])) || !checarExistenciaVertice(selecionado, stoi(parSeparado[0])))
+					{
+						std::cout << "Digitação inválida ou os vértices não existem" << endl;
+					}
+					else
+					{
+						vector <int> temp;
+						temp.push_back(stoi(parSeparado[0]));
+						temp.push_back(stoi(parSeparado[1]));
+						cortes.push_back(temp);
+					}
+					par.clear();
+					std::cout << "Deseja digitar mais algum par de vértice? 1- Para sim, qualquer outra tecla para não." << endl;
+					std::cin >> par;
+					setbuf(stdin, NULL);
+				} while (stoi(par) == 1);
+				vector <Vertice> _tempVertices(selecionado->Vertices.size());
+				copy(selecionado->Vertices.begin(), selecionado->Vertices.end(), _tempVertices.begin());
+				long int capacidade = 0;
+				for (std::vector<vector<int>>::iterator i = cortes.begin(); i != cortes.end(); i++) {
+					int verticeOrigem = ((*i)[0]) - 1;
+					for (int j = 0; j < _tempVertices[verticeOrigem].Sucessores.size(); j++) {
+						if (_tempVertices[verticeOrigem].Sucessores[j] == (*i)[1]) {
+							capacidade += selecionado->MatrizAdjacencia[verticeOrigem][j];
+							_tempVertices[verticeOrigem].Sucessores.erase(_tempVertices[verticeOrigem].Sucessores.begin() + j);
+							break;
+						}
+					}
+				}
+				bool resultado = BuscaEmLargura(_tempVertices, stoi(string(vertice)), stoi(string(vertice2)), selecionado->Direcionado);
+				resultado == false ? (std::cout << "Os pares de vértices contidos no arquivo representam um corte!" << endl
+					<< "Capacidade: " << capacidade << endl)
+					: (std::cout << "Os pares de vértices contidos no arquivo NÃO representam um corte!" << endl);
+				Pause();
+			}
+			else {
+				std::cout << "Grafo possui circuíto. Impossível determinar corte" << endl;
+				Pause();
+			}
 			break;
 		}
 		case 0: {

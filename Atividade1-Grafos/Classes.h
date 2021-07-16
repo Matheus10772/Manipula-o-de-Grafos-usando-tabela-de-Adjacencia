@@ -21,6 +21,8 @@ public:
 	std::vector <int> Antecessores;
 	std::vector <int> Sucessores;
 	std::vector <int> Adjacentes;
+	std::string cor = "branco";
+	long int distanciaOrigem = NULL;
 };
 class Grafo
 {

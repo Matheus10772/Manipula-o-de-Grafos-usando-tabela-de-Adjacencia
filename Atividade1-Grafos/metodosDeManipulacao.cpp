@@ -1,5 +1,6 @@
 #include "metodosDeManipulacao.h"
 
+
 Grafo CriaGrafo(string Direcionado, unsigned int QuantidadeDeVertices, unsigned int QtdArestas)
 {
 	Grafo newGrafo;
@@ -189,6 +190,235 @@ vector<vector<int>> MaiorDistancia_FloydWarshall(Grafo* _Grafo)
 	return matrizDistancia;
 }
 
+void enfileirar(vector<Vertice*> &fileira, Vertice* item, int& MaxTamFileira) {
+	fileira.push_back(item);
+	MaxTamFileira += 1;
+}
+
+Vertice* desenfileirar(vector<Vertice*> &fileira, int& MaxTamFileira) {
+	Vertice* item = fileira.front();
+	for (int i = 0; i < MaxTamFileira; i++) {
+		fileira[i] = fileira[i + 1];
+	}
+	fileira.pop_back();
+	MaxTamFileira -= 1;
+	/*if (MaxTamFileira < 0) {
+		free(fileira);
+		fileira = NULL;
+	}*/
+	return item;
+}
+
+bool BuscaEmLargura(vector <Vertice>& _Vertices, int verticeOrigem, int verticeDestino, string direcionado) {
+	verticeOrigem = verticeOrigem - 1;
+	verticeDestino = verticeDestino - 1;
+	vector<Vertice*> fileira;
+	Vertice* atual;
+	int MaxTamFileira = 0;
+	bool encontrou = false;
+	_Vertices[verticeOrigem].cor = "cinza";
+	_Vertices[verticeOrigem].distanciaOrigem = 0;
+	enfileirar(fileira, &(_Vertices[verticeOrigem]), MaxTamFileira);
+	if (direcionado == "Não direcionado") {
+		do { //Enquanto a fila não está vazia
+			atual = desenfileirar(fileira, MaxTamFileira); //Desenfileira
+			if (atual->id == _Vertices[verticeDestino].id) {
+				cout << "Encontrou" << endl;
+				cout << "Vertice: " << atual->id << endl;
+				encontrou = true;
+				break;
+			}
+			int numDeAdjacencias = atual->Sucessores.size();
+			for (int i = 0; i < numDeAdjacencias; i++) { //Percorre os adjacentes de u
+				if (_Vertices[atual->Sucessores[i] - 1].cor == "branco") { //Testa se está na cor branca
+					_Vertices[atual->Sucessores[i] - 1].cor == "cinza";//Define a cor como cinza
+					_Vertices[atual->Sucessores[i] - 1].distanciaOrigem = atual->distanciaOrigem + 1;//Calcula a distância até v
+					enfileirar(fileira, &(_Vertices[atual->Sucessores[i] - 1]), MaxTamFileira); //Coloca na fila
+				}
+			}
+			atual->cor = "preto"; //Define a cor como preta
+			cout << "Vertice " << atual->id << ": " << "cor = " << atual->cor << " distância = " << atual->distanciaOrigem << endl << endl;
+		} while (MaxTamFileira > 0);
+	}
+	else 
+	{
+		do { //Enquanto a fila não está vazia
+			atual = desenfileirar(fileira, MaxTamFileira); //Desenfileira
+			if (atual->id == _Vertices[verticeDestino].id) {
+				cout << "Encontrou" << endl;
+				cout << "Vertice: " << atual->id << endl;
+				encontrou = true;
+				break;
+			}
+			int numDeAdjacencias = atual->Adjacentes.size();
+			for (int i = 0; i < numDeAdjacencias; i++) { //Percorre os adjacentes de u
+				if (_Vertices[atual->Adjacentes[i] - 1].cor == "branco") { //Testa se está na cor branca
+					_Vertices[atual->Adjacentes[i] - 1].cor == "cinza";//Define a cor como cinza
+					_Vertices[atual->Adjacentes[i] - 1].distanciaOrigem = atual->distanciaOrigem + 1;//Calcula a distância até v
+					enfileirar(fileira, &(_Vertices[atual->Adjacentes[i] - 1]), MaxTamFileira); //Coloca na fila
+				}
+			}
+			atual->cor = "preto"; //Define a cor como preta
+			cout << "Vertice " << atual->id << ": " << "cor = " << atual->cor << " distância = " << atual->distanciaOrigem << endl << endl;
+		} while (MaxTamFileira > 0);
+	}
+	return encontrou;
+}
+
+bool checarFConexa(Grafo* _CopyGrafo, int origem) {
+	origem = origem - 1;
+	vector <Vertice>* verticeInicial = new vector <Vertice>;
+	verticeInicial->reserve(_CopyGrafo->Vertices.size());
+	copy(_CopyGrafo->Vertices.begin(), _CopyGrafo->Vertices.end(), verticeInicial->begin());
+	int contador = 0;
+	bool isFConexa = false;
+
+	vector <int>* fTransitivoDireto = new vector <int>;
+	vector <int>* fTransitivoIndireto = new vector <int>;
+	vector <int>* componenteCorrente = new vector <int>;
+	vector <int>* nMais = new vector <int>(10);
+	vector <int>* nMenos = new vector <int>(10);
+	//vector <int>* nMaisS = new vector <int>(10); //N+(R+)-R+
+	//vector <int>* nMenosS = new vector <int>(10); //N-(R-)-R-
+	
+	
+	while (contador <= _CopyGrafo->QuantidadeDeVertices)
+	{
+		//verticeInicial->push_back(_CopyGrafo->Vertices[origem].id - 1);
+		fTransitivoDireto->push_back(verticeInicial->front().id - 1);
+		fTransitivoIndireto->push_back(verticeInicial->front().id - 1);
+
+		for (int i = 0; i < fTransitivoDireto->size(); i++) {
+			for (int j = 0; j < _CopyGrafo->Vertices[(*fTransitivoDireto)[i]].Sucessores.size(); j++) {
+				bool control = false;
+				for (int k = 0; k < fTransitivoDireto->size(); k++) {
+					if (_CopyGrafo->Vertices[(*fTransitivoDireto)[i]].Sucessores[j] == (*fTransitivoDireto)[k]) {
+						control = true;
+						break;
+					}
+				}
+				if(!control)
+					nMais->push_back(_CopyGrafo->Vertices[(*fTransitivoDireto)[i]].Sucessores[j]);
+			}
+		}
+
+		/*for (int i = 0; i < nMais->size(); i++) {
+			bool control = false;
+			for (int k = 0; k < fTransitivoDireto->size(); k++) {
+				if ((*nMais)[i] == (*fTransitivoDireto)[k])
+				{
+					control = true;
+					break;
+				}
+			}
+			if (!control)
+				nMaisS->push_back((*nMais)[i]);
+		}*/
+
+		for (int i = 0; i < fTransitivoIndireto->size(); i++) {
+			for (int j = 0; j < _CopyGrafo->Vertices[(*fTransitivoIndireto)[i]].Antecessores.size(); j++) {
+				bool control = false;
+				for (int k = 0; k < fTransitivoIndireto->size(); k++) {
+					if (_CopyGrafo->Vertices[(*fTransitivoIndireto)[i]].Antecessores[j] == (*fTransitivoIndireto)[k]) {
+						control = true;
+						break;
+					}
+				}
+				if (!control)
+					nMenos->push_back(_CopyGrafo->Vertices[(*fTransitivoIndireto)[i]].Antecessores[j]);
+			}
+		}
+
+		/*for (int i = 0; i < nMenos->size(); i++) {
+			bool control = false;
+			for (int k = 0; k < fTransitivoIndireto->size(); k++) {
+				if ((*nMenos)[i] == (*fTransitivoIndireto)[k])
+				{
+					control = true;
+					break;
+				}
+			}
+			if (!control)
+				nMenosS->push_back((*nMenos)[i]);
+		}*/
+
+		while (!nMais->empty())
+		{
+			componenteCorrente->reserve(componenteCorrente->size() + nMais->size());
+			componenteCorrente->insert(componenteCorrente->end(), nMais->begin(), nMais->end());
+			fTransitivoDireto->reserve(fTransitivoDireto->size() + componenteCorrente->size());
+			fTransitivoDireto->insert(fTransitivoDireto->end(), componenteCorrente->begin(), componenteCorrente->end());
+
+			nMais->clear();
+			for (int i = 0; i < fTransitivoDireto->size(); i++) {
+				for (int j = 0; j < _CopyGrafo->Vertices[(*fTransitivoDireto)[i]].Sucessores.size(); j++) {
+					bool control = false;
+					for (int k = 0; k < fTransitivoDireto->size(); k++) {
+						if (_CopyGrafo->Vertices[(*fTransitivoDireto)[i]].Sucessores[j] == (*fTransitivoDireto)[k]) {
+							control = true;
+							break;
+						}
+					}
+					if (!control)
+						nMais->push_back(_CopyGrafo->Vertices[(*fTransitivoDireto)[i]].Sucessores[j]);
+				}
+			}
+			componenteCorrente->clear();
+			componenteCorrente->resize(0);
+		}
+
+		while (!nMenos->empty())
+		{
+			componenteCorrente->reserve(componenteCorrente->size() + nMenos->size());
+			componenteCorrente->insert(componenteCorrente->end(), nMenos->begin(), nMenos->end());
+			fTransitivoIndireto->reserve(fTransitivoIndireto->size() + componenteCorrente->size());
+			fTransitivoIndireto->insert(fTransitivoIndireto->end(), componenteCorrente->begin(), componenteCorrente->end());
+
+			nMenos->clear();
+			for (int i = 0; i < fTransitivoIndireto->size(); i++) {
+				for (int j = 0; j < _CopyGrafo->Vertices[(*fTransitivoIndireto)[i]].Antecessores.size(); j++) {
+					bool control = false;
+					for (int k = 0; k < fTransitivoIndireto->size(); k++) {
+						if (_CopyGrafo->Vertices[(*fTransitivoIndireto)[i]].Antecessores[j] == (*fTransitivoIndireto)[k]) {
+							control = true;
+							break;
+						}
+					}
+					if (!control)
+						nMenos->push_back(_CopyGrafo->Vertices[(*fTransitivoIndireto)[i]].Antecessores[j]);
+				}
+			}
+			componenteCorrente->clear();
+			componenteCorrente->resize(0);
+		}
+
+		for (int i = 0; i < fTransitivoDireto->size(); i++) {
+			bool control = false;
+			for (int j = 0; j < fTransitivoIndireto->size(); j++) {
+				if ((*fTransitivoDireto)[i] == (*fTransitivoIndireto)[j]) {
+					control = true;
+					isFConexa = true;
+					break;
+				}
+			}
+			if (control) {
+				for (int k = 0; k < verticeInicial->size(); k++) {
+					if ((*fTransitivoDireto)[i] == (*verticeInicial)[k].id)
+						verticeInicial->erase(verticeInicial->begin() + k);
+				}
+			}
+		}
+
+		fTransitivoDireto->clear();
+		fTransitivoDireto->resize(0);
+		fTransitivoIndireto->clear();
+		fTransitivoIndireto->resize(0);
+
+		contador++;
+	}
+	return isFConexa;
+}
+
 vector<vector<int>> ExcentricidadeTodosOsVertices(Grafo* _Grafo)
 {
 	return MaiorDistancia_FloydWarshall(_Grafo);
@@ -347,26 +577,23 @@ vector<string> split_string(string str, const char* op) {
 	return result;
 }
 
-vector<DadosDoArquivo> LerArquivo(string arqName)
+vector<vector<int>> LerArquivo(string arqName)
 {
 	std::ifstream Arquivo(arqName);
-	vector<DadosDoArquivo> arrayDeDadosConvertidos;
+	vector<vector<int>> arrayDeDadosConvertidos;
 	char buffer[256];
 	string caracteresValidos = { "1234567890" };
 	while (!Arquivo.eof())
 	{
-		DadosDoArquivo Dados;
+		vector<int> Dados;
 		Arquivo.getline(buffer, 256);
 		if (checkValoresValidos(caracteresValidos, buffer) && strlen(buffer) != 0) {
 			vector<string> arrayDeDados = split_string(string(buffer), " ");
 			unsigned int indice = 0;
-			while (indice < arrayDeDados.size() - 1)
+			while (indice < arrayDeDados.size())
 			{
-				Dados.origem = stoi(arrayDeDados[indice]);
+				Dados.push_back(stoi(arrayDeDados[indice]));
 				indice++;
-				Dados.destino = stoi(arrayDeDados[indice]);
-				indice++;
-				Dados.valor = stoi(arrayDeDados[indice]);
 			}
 			arrayDeDadosConvertidos.push_back(Dados);
 		}
